@@ -1,13 +1,13 @@
 class Solution {
 public:
-   vector<vector<int>> findWinners(vector<vector<int>>& matches) {
+    vector<vector<int>> findWinners(vector<vector<int>>& matches) {
         // HashMap to store loss count for each player
         unordered_map<int, int> lossCount;
         
         // Track all players who have played at least one match
         for (const auto& match : matches) {
-            int winner = match[0];  // DECLARED INSIDE LOOP
-            int loser = match[1];   // DECLARED INSIDE LOOP
+            int winner = match[0];
+            int loser = match[1];
             
             // Ensure winner is in the map (if not present, initialize with 0 losses)
             if (lossCount.find(winner) == lossCount.end()) {
@@ -23,10 +23,7 @@ public:
         vector<int> oneLoss;
         
         // Iterate through all players in the map
-        for (const auto& entry : lossCount) {
-            int player = entry.first;
-            int losses = entry.second;
-            
+        for (const auto& [player, losses] : lossCount) {
             if (losses == 0) {
                 zeroLoss.push_back(player);
             } else if (losses == 1) {
