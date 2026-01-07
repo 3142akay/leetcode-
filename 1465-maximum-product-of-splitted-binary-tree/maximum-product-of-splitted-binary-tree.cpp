@@ -11,35 +11,66 @@
  */
 class Solution {
 public:
-    static const int MOD = 1e9 + 7;
-
-    long long totalSum = 0;
-    long long bestProduct = 0;   // 🔧 renamed variable
-
-    // First DFS to calculate total sum
-    long long getTotalSum(TreeNode* root) {
-        if (!root) return 0;
-        return root->val + getTotalSum(root->left) + getTotalSum(root->right);
+long long total;       // Poore tree ka sum
+    long long maxProd;     // Maximum product track karne ke liye
+    const int MOD = 1e9 + 7;  // Modulo value
+    
+    /*
+     * Helper Function 1: calculateSum
+     * --------------------------------
+     * Tree ka total sum calculate karta hai using DFS.
+     * 
+     * ⚠️ FIX: Yeh function PUBLIC function se PEHLE declare hona chahiye!
+     * C++ mein function use karne se pehle declare hona zaruri hai.
+     */
+    long long calculateSum(TreeNode* node) {
+        // BASE CASE: Agar node NULL hai, sum = 0
+        if (node == nullptr) {
+            return 0;
+        }
+        // RECURSIVE CASE: Current + Left subtree + Right subtree
+        return node->val + calculateSum(node->left) + calculateSum(node->right);
     }
-
-    // Second DFS to calculate subtree sums and maximize product
-    long long dfs(TreeNode* root) {
-        if (!root) return 0;
-
-        long long leftSum = dfs(root->left);
-        long long rightSum = dfs(root->right);
-
-        long long subTreeSum = root->val + leftSum + rightSum;
-
-        long long product = subTreeSum * (totalSum - subTreeSum);
-        bestProduct = max(bestProduct, product);
-
-        return subTreeSum;
+    
+    /*
+     * Helper Function 2: findMaxProduct
+     * ----------------------------------
+     * Har subtree ke liye product calculate karke maximum track karta hai.
+     */
+    long long findMaxProduct(TreeNode* node) {
+        // BASE CASE: NULL node ka sum = 0
+        if (node == nullptr) {
+            return 0;
+        }
+        
+        // Calculate left and right subtree sums
+        long long leftSum = findMaxProduct(node->left);
+        long long rightSum = findMaxProduct(node->right);
+        
+        // Current subtree ka sum
+        long long subtreeSum = node->val + leftSum + rightSum;
+        
+        // Calculate PRODUCT: subtreeSum × (total - subtreeSum)
+        long long product = subtreeSum * (total - subtreeSum);
+        
+        // Update maximum product
+        maxProd = max(maxProd, product);
+        
+        // Return current subtree sum for parent
+        return subtreeSum;
     }
-
     int maxProduct(TreeNode* root) {
-        totalSum = getTotalSum(root);
-        dfs(root);
-        return bestProduct % MOD;
+        total = 0;
+        maxProd = 0;
+        
+        // PASS 1: Calculate TOTAL SUM of entire tree
+        total = calculateSum(root);
+        
+        // PASS 2: Find maximum product by trying each split
+        findMaxProduct(root);
+        
+        // Return result with modulo
+        return maxProd % MOD;
+        
     }
 };
